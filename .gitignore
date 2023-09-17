@@ -1,3 +1,5 @@
 memo.md
 tmp
 client.http
+.env
+mysql
