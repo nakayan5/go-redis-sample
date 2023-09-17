@@ -7,7 +7,8 @@ import (
 
 func main() {
 	// reids
-	repository.SetupRedis()
+	repository.Setup()
+	// repository.Redis()
 	
 	app := fiber.New()
 
@@ -15,19 +16,35 @@ func main() {
 		return c.SendString("Hello, World 👋!")
 	})
 
-	app.Get("users/:uuid", getUserList)
+	// app.Get("users/:uuid", getUserList)
+	app.Get("user", createUser)
 
 	app.Listen(":8080")
 }
 
-func getUserList(c *fiber.Ctx) error {
-	uuid := c.Params("uuid")
+// リクエストの際にダミーユーザーを生成して
+func createUser(c *fiber.Ctx) error {
+	db := repository.Connect()
 
-	userList, err := repository.GetUserLis(uuid)
+	result, err := db.Exec("INSERT INTO users (`id`, `name`) VALUES (1, '中村')")
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	return c.JSON(userList)
+	// return result.LastInsertId()
+
+    return c.JSON(result)
 }
+
+// func getUserList(c *fiber.Ctx) error {
+// 	uuid := c.Params("uuid")
+
+// 	userList, err := repository.GetUserLis(uuid)
+
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	return c.JSON(userList)
+// }

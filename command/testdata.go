@@ -12,11 +12,10 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type SomeStructWithTags struct {
-	Email     string `faker:"email"`
-	Name      string `faker:"name"`
-	UUID      string `faker:"uuid_digit"`
-	AccountID int    `faker:"oneof: 15, 27, 61"`
+
+type FakeUser struct {
+	Name    string `faker:"name"`
+	Id      string `faker:"uuid_digit"`
 }
 
 func SetupRedis() *redis.Client {
@@ -28,7 +27,7 @@ func SetupRedis() *redis.Client {
 }
 
 func main() {
-	a := SomeStructWithTags{}
+	a := FakeUser{}
 	err := faker.FakeData(&a)
 
 	if err != nil {
@@ -44,9 +43,8 @@ func main() {
 		}
 
 		userList = append(userList, models.User{
-			AccountID: a.AccountID,
+			Id: a.Id,
 			Name: a.Name,
-			Email: a.Email,
 		})
 	}
 
@@ -57,8 +55,8 @@ func main() {
 	}
 
 	// UUIDはデータにアクセスするために必要
-	UUID := a.UUID
-	fmt.Println("UUID: ", UUID)
+	UUID := a.Id
+	fmt.Println("Id: ", UUID)
 
 	// Reedisに接続
 	c := context.Background()
@@ -70,5 +68,5 @@ func main() {
 		panic(err)
 	}
 
-	log.Println("complete")
+	log.Println("create testdata complete")
 }

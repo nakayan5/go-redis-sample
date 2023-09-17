@@ -1,15 +1,57 @@
 version: "3.9"
 services:
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
     volumes:
       - .:/app
     depends_on:
+      - db
       - redis
+    networks:
+      - go_redis_sample
+
+  db:
+    container_name: db
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    platform: linux/x86_64
+    tty: true
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    # env_file:
+    #   - .env
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./db/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./db/script:/script
+      # - ./db/conf:/etc/mysql/conf/
+      # - ./db/init:/docker-entrypoint-initdb.d
+      # - type: volume
+      #   source: mysql_test_volume
+      #   target: /var/lib/mysql
+      # - type: bind
+      #   source: ./init
+      #   target: /docker-entrypoint-initdb.d
+    networks:
+      - go_redis_sample
 
   redis:
     image: redis:latest
     ports:
       - 6379:6379
+    networks:
+      - go_redis_sample
+
+networks:
+  go_redis_sample:
+    external: true
