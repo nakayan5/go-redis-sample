@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"go-redis-sample/models"
 	"go-redis-sample/repository"
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +18,7 @@ func main() {
 		return c.SendString("Hello, World 👋!")
 	})
 
-	app.Get("users", getUserList)
+	app.Get("users", getUser)
 	app.Post("user", createUser)
 	// app.Get("user/:id")
 
@@ -39,33 +40,23 @@ func createUser(c *fiber.Ctx) error {
 		return c.Status(500).SendString(err.Error())
 	}
 
-	// return result.LastInsertId()
-
     return c.Status(200).SendString("success create user")
 }
 
 
-// TODO: キャッシュがあればそれを返す
-func getUserList(c *fiber.Ctx) error {
+func getUser(c *fiber.Ctx) error {
 	db := repository.Connect()
+	client := repository.NewClient()
+	context := context.Background()
 
-	result, err := db.Exec(`SELECT * FROM users`);
+    userRepository := repository.NewUserRepository(db, *client)
+
+	user, err := userRepository.GetByID(context, 1)
+
 
 	if err != nil {
 		return c.Status(500).SendString(err.Error())
 	}
 
-	return c.JSON(result)
+	return c.JSON(user)
 }
-
-// func getUserList(c *fiber.Ctx) error {
-// 	uuid := c.Params("uuid")
-
-// 	userList, err := repository.GetUserLis(uuid)
-
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	return c.JSON(userList)
-// }
