@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
+	"log"
+	"fmt"
 	"go-redis-sample/models"
 	"go-redis-sample/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
-	// reids
-	repository.Setup()
-	// repository.Redis()
+	repository.Setup()	
 	
 	app := fiber.New()
 
@@ -18,14 +18,12 @@ func main() {
 		return c.SendString("Hello, World 👋!")
 	})
 
-	app.Get("users", getUser)
+	app.Get("user/:id", getUser)
 	app.Post("user", createUser)
-	// app.Get("user/:id")
 
 	app.Listen(":8080")
 }
 
-// リクエストの際にダミーユーザーを生成して
 func createUser(c *fiber.Ctx) error {
 	db := repository.Connect()
 
@@ -48,10 +46,13 @@ func getUser(c *fiber.Ctx) error {
 	db := repository.Connect()
 	client := repository.NewClient()
 	context := context.Background()
+	id := c.Params("id")
+
+	log.Println(fmt.Sprintf("idは%sです", id))
 
     userRepository := repository.NewUserRepository(db, *client)
 
-	user, err := userRepository.GetByID(context, 1)
+	user, err := userRepository.GetByID(context, id)
 
 
 	if err != nil {

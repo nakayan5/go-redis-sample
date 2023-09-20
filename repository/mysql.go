@@ -1,11 +1,8 @@
 package repository
 
 import (
-	// "database/sql"
 	"fmt"
-	"time"
-	// "os"
-	
+	"time"	
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )

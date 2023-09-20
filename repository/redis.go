@@ -53,7 +53,7 @@ func (c *Cache[T]) GetOrSet(
 		// キャッシュから取得
 		bytes, exist, err := c.client.Get(ctx, key)
 		if err != nil {
-			log.Println(err)
+			log.Println(err.Error())
 		}
 		if exist {
 			return bytes, nil
@@ -70,7 +70,7 @@ func (c *Cache[T]) GetOrSet(
 		// キャッシュに保存
 		err = c.client.Set(ctx, key, bytes, c.expiration)
 		if err != nil {
-			log.Println(err)
+			log.Println(err.Error())
 		}
 		return bytes, nil
 	})
