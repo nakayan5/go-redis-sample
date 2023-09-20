@@ -16,7 +16,7 @@ docker compose exec -it db /script/init.sh
 ```mermaid
 erDiagram
     users {
-        bigint id PK "id"
+        varchar id PK "id"
         varchar name "name"
     }
 ```
